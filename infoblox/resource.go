@@ -9,12 +9,13 @@ import (
 func CreateResource(name string, resource *schema.Resource, d *schema.ResourceData, m interface{}) error {
 
 	obj := make(map[string]interface{})
-
 	attrs := GetAttrs(resource)
-	for _, key := range attrs {
+	for _, attr := range attrs {
+		key := attr.Name
 		log.Println("Found attribute: ", key)
 		if v, ok := d.GetOk(key); ok {
-			obj[key] = v
+			attr.Value = v
+			obj[key] = GetValue(attr)
 		}
 	}
 
@@ -40,7 +41,11 @@ func ReadResource(resource *schema.Resource, d *schema.ResourceData, m interface
 	obj := make(map[string]interface{})
 
 	attrs := GetAttrs(resource)
-	err := client.Read(ref, attrs, &obj)
+	keys := []string{}
+	for _, attr := range attrs {
+		keys = append(keys, attr.Name)
+	}
+	err := client.Read(ref, keys, &obj)
 	if err != nil {
 		d.SetId("")
 		return err
@@ -80,12 +85,13 @@ func UpdateResource(resource *schema.Resource, d *schema.ResourceData, m interfa
 	obj := make(map[string]interface{})
 
 	attrs := GetAttrs(resource)
-	for _, key := range attrs {
+	for _, attr := range attrs {
+		key := attr.Name
 		if d.HasChange(key) {
-			v := d.Get(key)
-			log.Printf("Updating field %s, value: %+v\n", key, v)
+			attr.Value = d.Get(key)
+			obj[key] = GetValue(attr)
+			log.Printf("Updating field %s, value: %+v\n", key, obj[key])
 			needsUpdate = true
-			obj[key] = v
 		}
 	}
 
