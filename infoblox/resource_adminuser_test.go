@@ -5,8 +5,6 @@ import (
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"github.com/sky-uk/skyinfoblox"
-	"github.com/sky-uk/skyinfoblox/api/adminuser"
 	"testing"
 )
 
@@ -27,7 +25,7 @@ func TestAccAdminUserResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "name", recordUserName),
 					resource.TestCheckResourceAttr(resourceName, "comment", "this is a comment"),
 					resource.TestCheckResourceAttr(resourceName, "email", "exampleuser@domain.internal.com"),
-					//resource.TestCheckResourceAttr(resourceName, "admin_groups", "APP-OVP-INFOBLOX-READONLY"),
+					//resource.TestCheckResourceAttr(resourceName, "admin_groups", []string{"APP-OVP-INFOBLOX-READONLY"}),
 				),
 			}, {
 				Config: testAccResourceAdminUserNameUpdateTemplate(recordUserName),
@@ -36,7 +34,7 @@ func TestAccAdminUserResource(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "name", recordUserName),
 					resource.TestCheckResourceAttr(resourceName, "comment", "this is a comment updated"),
 					resource.TestCheckResourceAttr(resourceName, "email", "user@domain.internal.com"),
-					//resource.TestCheckResourceAttr(resourceName, "admin_groups", "APP-OVP-INFOBLOX-READONLY"),
+					//resource.TestCheckResourceAttr(resourceName, "admin_groups", []string{"APP-OVP-INFOBLOX-READONLY"}),
 				),
 			},
 		},
@@ -45,26 +43,22 @@ func TestAccAdminUserResource(t *testing.T) {
 }
 
 func testAccResourceAdminUserDestroy(state *terraform.State) error {
-	infobloxClient := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
+	client := GetClient()
 	for _, rs := range state.RootModule().Resources {
 		if rs.Type != "infoblox_admin_user" {
 			continue
 		}
-		if res, ok := rs.Primary.Attributes["id"]; ok && res != "" {
-			return nil
+		if ref, ok := rs.Primary.Attributes["id"]; ok && ref != "" {
+			fmt.Println("[testAccResourceAdminUserDestroy]: Going to read resource ", ref)
+			obj := make(map[string]interface{})
+			err := client.Read(ref, []string{"name"}, &obj)
+			if err != nil {
+				continue //this simply means that the resource doesn't exists on infoblox...
+			}
+			if obj["name"] == "testadminuser" {
+				return fmt.Errorf("Record %s still exists!\n", obj["name"])
+			}
 		}
-		fields := []string{"name"}
-		fmt.Println(rs.Primary.Attributes)
-		api := adminuser.NewGetAdminUser(rs.Primary.Attributes["id"], fields)
-		err := infobloxClient.Do(api)
-		if err != nil {
-			return err
-		}
-
-		if api.ResponseObject().(*adminuser.AdminUser).Name == "testadminuser" {
-			return fmt.Errorf("Record still exists %s", rs.Primary.Attributes["name"])
-		}
-
 	}
 	return nil
 }
@@ -75,24 +69,21 @@ func testAccResourceAdminUserExists(recordUserName, resourceName string) resourc
 		if !ok {
 			return fmt.Errorf("\nInfoblox Admin User resource %s not found in resources: ", resourceName)
 		}
-		if rs.Primary.ID == "" {
-			return fmt.Errorf("\nInfoblox Admin Userresource %s ID not set", resourceName)
-		}
-		infobloxClient := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
+		ref := rs.Primary.ID
+		fmt.Println("[testAccResourceAdminUserExists]: Obj REF: ", ref)
+		client := GetClient()
+		obj := make(map[string]interface{})
 		fields := []string{"name", "comment", "email", "admin_groups"}
-		getAdminUser := adminuser.NewGetAdminUser(rs.Primary.Attributes["id"], fields)
-		err := infobloxClient.Do(getAdminUser)
+		err := client.Read(ref, fields, &obj)
 		if err != nil {
-			return fmt.Errorf("Could not get the resource %s", err.Error())
+			return fmt.Errorf("Could not get the resource: %s", err.Error())
 		}
-		returnedUser := getAdminUser.ResponseObject().(*adminuser.AdminUser)
-		if returnedUser.Name == recordUserName {
+		if obj["name"] == recordUserName {
 			return nil
 
 		}
-		return fmt.Errorf("Could not find %s", recordUserName)
+		return fmt.Errorf("Could not find object %s", recordUserName)
 	}
-
 }
 
 func testAccResourceAdminUserNameCreateTemplate(username string) string {

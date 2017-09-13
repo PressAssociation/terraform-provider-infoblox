@@ -5,8 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"github.com/sky-uk/skyinfoblox"
-	"github.com/sky-uk/skyinfoblox/api/dnsview"
+	"github.com/sky-uk/skyinfoblox/api/common/v261/model"
 	"regexp"
 	"testing"
 )
@@ -24,7 +23,7 @@ func TestAccInfobloxDNSViewBasic(t *testing.T) {
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		CheckDestroy: func(state *terraform.State) error {
-			return testAccInfobloxDNSViewCheckDestroy(state, dnsViewName)
+			return TestAccCheckDestroy(model.ViewObj, "name", dnsViewName)
 		},
 		Steps: []resource.TestStep{
 			{
@@ -55,6 +54,7 @@ func TestAccInfobloxDNSViewBasic(t *testing.T) {
 	})
 }
 
+/*
 func testAccInfobloxDNSViewCheckDestroy(state *terraform.State, dnsViewName string) error {
 
 	client := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
@@ -79,30 +79,35 @@ func testAccInfobloxDNSViewCheckDestroy(state *terraform.State, dnsViewName stri
 	}
 	return nil
 }
+*/
 
 func testAccInfobloxDNSViewCheckExists(dnsViewName, dnsViewResource string) resource.TestCheckFunc {
 	return func(state *terraform.State) error {
 
-		rs, ok := state.RootModule().Resources[dnsViewResource]
-		if !ok {
-			return fmt.Errorf("\nInfoblox DNS View %s wasn't found in resources", dnsViewName)
-		}
-		if rs.Primary.ID == "" {
-			return fmt.Errorf("\nInfoblox DNS View ID not set for %s in resources", dnsViewName)
-		}
+		return TestAccCheckExists(model.ViewObj, "name", dnsViewName)
 
-		client := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
-		api := dnsview.NewGetAll()
-		err := client.Do(api)
-		if err != nil {
-			return fmt.Errorf("Infoblox DNS View - error whilst retrieving a list of DNS Views: %+v", err)
-		}
-		for _, dnsView := range *api.ResponseObject().(*[]dnsview.DNSView) {
-			if dnsView.Name == dnsViewName {
-				return nil
+		/*
+			rs, ok := state.RootModule().Resources[dnsViewResource]
+			if !ok {
+				return fmt.Errorf("\nInfoblox DNS View %s wasn't found in resources", dnsViewName)
 			}
-		}
-		return fmt.Errorf("Infoblox DNS View %s wasn't found on remote Infoblox server", dnsViewName)
+			if rs.Primary.ID == "" {
+				return fmt.Errorf("\nInfoblox DNS View ID not set for %s in resources", dnsViewName)
+			}
+
+			client := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
+			api := dnsview.NewGetAll()
+			err := client.Do(api)
+			if err != nil {
+				return fmt.Errorf("Infoblox DNS View - error whilst retrieving a list of DNS Views: %+v", err)
+			}
+			for _, dnsView := range *api.ResponseObject().(*[]dnsview.DNSView) {
+				if dnsView.Name == dnsViewName {
+					return nil
+				}
+			}
+			return fmt.Errorf("Infoblox DNS View %s wasn't found on remote Infoblox server", dnsViewName)
+		*/
 	}
 }
 

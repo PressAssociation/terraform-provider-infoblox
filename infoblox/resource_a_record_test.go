@@ -5,8 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"github.com/sky-uk/skyinfoblox"
-	"github.com/sky-uk/skyinfoblox/api/records"
+	"github.com/sky-uk/skyinfoblox/api/common/v261/model"
 	"testing"
 )
 
@@ -22,7 +21,7 @@ func TestAccResourceARecord(t *testing.T) {
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		CheckDestroy: func(state *terraform.State) error {
-			return testAccResourceARecordDestroy(state, recordName)
+			return TestAccCheckDestroy(model.RecordAObj, "name", recordName)
 		},
 		Steps: []resource.TestStep{
 			{
@@ -30,7 +29,7 @@ func TestAccResourceARecord(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccResourceARecordExists(recordName, resourceName),
 					resource.TestCheckResourceAttr(resourceName, "name", recordName),
-					resource.TestCheckResourceAttr(resourceName, "address", "10.0.0.10"),
+					resource.TestCheckResourceAttr(resourceName, "ipv4addr", "10.0.0.10"),
 					resource.TestCheckResourceAttr(resourceName, "ttl", "9000"),
 				),
 			},
@@ -39,7 +38,7 @@ func TestAccResourceARecord(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccResourceARecordExists(recordName, resourceName),
 					resource.TestCheckResourceAttr(resourceName, "name", recordName),
-					resource.TestCheckResourceAttr(resourceName, "address", "10.0.0.10"),
+					resource.TestCheckResourceAttr(resourceName, "ipv4addr", "10.0.0.10"),
 					resource.TestCheckResourceAttr(resourceName, "ttl", "900"),
 				),
 			},
@@ -47,33 +46,22 @@ func TestAccResourceARecord(t *testing.T) {
 	})
 }
 
+/*
 func testAccResourceARecordDestroy(state *terraform.State, recordName string) error {
 
-	infobloxClient := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
-
-	for _, rs := range state.RootModule().Resources {
-		if rs.Type != "infoblox_arecord" {
-			continue
+	client := GetClient()
+	recs, err := client.ReadAll(model.RecordAObj)
+	if err != nil {
+		return err
+	}
+	for _, rec := range recs {
+		if rec["name"] == recordName {
+			return fmt.Errorf("A record %s still exists!!", recordName)
 		}
-		if res, ok := rs.Primary.Attributes["ref"]; ok && res == "" {
-			return nil
-		}
-		fields := []string{"name", "ipv4addr", "ttl"}
-		api := records.NewGetARecord(rs.Primary.Attributes["id"], fields)
-		err := infobloxClient.Do(api)
-		if err != nil {
-			return err
-		}
-		response := *api.ResponseObject().(*string)
-
-		if response == recordName {
-			return fmt.Errorf("A record still exists: %+v", api.GetResponse())
-		}
-
 	}
 	return nil
 }
-
+*/
 func testAccResourceARecordExists(recordName, resourceName string) resource.TestCheckFunc {
 	return func(state *terraform.State) error {
 		rs, ok := state.RootModule().Resources[resourceName]
@@ -83,29 +71,26 @@ func testAccResourceARecordExists(recordName, resourceName string) resource.Test
 		if rs.Primary.ID == "" {
 			return fmt.Errorf("\nInfoblox A record resource %s ID not set", resourceName)
 		}
-		infobloxClient := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
-		fields := []string{"name", "ipv4addr", "ttl"}
-		getAllARec := records.NewGetAllARecords(fields)
-		err := infobloxClient.Do(getAllARec)
+		client := GetClient()
+		recs, err := client.ReadAll(model.RecordAObj)
 		if err != nil {
-			return fmt.Errorf("Error getting the A record: %+v", err)
+			return fmt.Errorf("Error getting the A records: %+v", err)
 		}
-		for _, x := range getAllARec.GetResponse() {
-			if x.Name == recordName {
+		for _, x := range recs {
+			if x["name"] == recordName {
 				return nil
 			}
 		}
 		return fmt.Errorf("Could not find %s", recordName)
 
 	}
-
 }
 
 func testAccResourceARecordCreateTemplate(arecordName string) string {
 	return fmt.Sprintf(`
 	resource "infoblox_arecord" "acctest"{
 	name = "%s"
-	address = "10.0.0.10"
+	ipv4addr = "10.0.0.10"
 	ttl = 9000
 	}`, arecordName)
 }
@@ -114,7 +99,8 @@ func testAccResourceARecordUpdateTemplate(arecordName string) string {
 	return fmt.Sprintf(`
 	resource "infoblox_arecord" "acctest"{
 	name = "%s"
-	address = "10.0.0.10"
+	ipv4addr = "10.0.0.10"
 	ttl = 900
+    use_ttl = false
 	}`, arecordName)
 }

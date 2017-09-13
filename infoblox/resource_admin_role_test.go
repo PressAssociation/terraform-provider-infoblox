@@ -5,8 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"github.com/sky-uk/skyinfoblox"
-	"github.com/sky-uk/skyinfoblox/api/adminrole"
+	"github.com/sky-uk/skyinfoblox/api/common/v261/model"
 	"regexp"
 	"testing"
 )
@@ -55,7 +54,7 @@ func TestAccInfobloxAdminRoleBasic(t *testing.T) {
 
 func testAccInfobloxAdminRoleCheckDestroy(state *terraform.State, adminRoleName string) error {
 
-	client := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
+	client := GetClient()
 
 	for _, rs := range state.RootModule().Resources {
 		if rs.Type != "infoblox_admin_role" {
@@ -64,13 +63,12 @@ func testAccInfobloxAdminRoleCheckDestroy(state *terraform.State, adminRoleName 
 		if id, ok := rs.Primary.Attributes["id"]; ok && id == "" {
 			return nil
 		}
-		api := adminrole.NewGetAll()
-		err := client.Do(api)
+		roles, err := client.ReadAll(model.AdminroleObj)
 		if err != nil {
 			return fmt.Errorf("Infoblox - error occurred whilst retrieving a list of Admin Roles")
 		}
-		for _, adminRole := range *api.ResponseObject().(*[]adminrole.AdminRole) {
-			if adminRole.Name == adminRoleName {
+		for _, adminRole := range roles {
+			if adminRole["name"] == adminRoleName {
 				return fmt.Errorf("Infoblox Admin Role %s still exists", adminRoleName)
 			}
 		}
@@ -89,14 +87,13 @@ func testAccInfobloxAdminRoleCheckExists(adminRoleName, adminRoleResource string
 			return fmt.Errorf("\nInfoblox Admin Role ID not set for %s in resources", adminRoleName)
 		}
 
-		client := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
-		api := adminrole.NewGetAll()
-		err := client.Do(api)
+		client := GetClient()
+		roles, err := client.ReadAll(model.AdminroleObj)
 		if err != nil {
 			return fmt.Errorf("Infoblox Admin Role - error whilst retrieving a list of Admin Roles: %+v", err)
 		}
-		for _, adminRole := range *api.ResponseObject().(*[]adminrole.AdminRole) {
-			if adminRole.Name == adminRoleName {
+		for _, adminRole := range roles {
+			if adminRole["name"] == adminRoleName {
 				return nil
 			}
 		}

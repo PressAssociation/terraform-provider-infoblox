@@ -30,13 +30,13 @@ func GetAttrs(resource *schema.Resource) []ResourceAttr {
 	return attrs
 }
 
+// GetValue - returns the value of an attribute
+// id does some transformations for specific types
 func GetValue(attr ResourceAttr) interface{} {
-    var value interface{}
-
 	switch attr.Type {
 	case schema.TypeSet:
 		v := attr.Value.(*schema.Set)
-		value = v.List()
+		return v.List()
 	}
 	return attr.Value
 }

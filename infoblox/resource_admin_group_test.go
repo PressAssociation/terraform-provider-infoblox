@@ -5,8 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"github.com/sky-uk/skyinfoblox"
-	"github.com/sky-uk/skyinfoblox/api/admingroup"
+	"github.com/sky-uk/skyinfoblox/api/common/v261/model"
 	"regexp"
 	"testing"
 )
@@ -99,7 +98,7 @@ func testAccInfobloxAdminGroupCheckValueInKeyPattern(adminGroupResource string, 
 
 func testAccInfobloxAdminGroupCheckDestroy(state *terraform.State, adminGroupName string) error {
 
-	client := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
+	client := GetClient()
 
 	for _, rs := range state.RootModule().Resources {
 		if rs.Type != "infoblox_admin_group" {
@@ -108,13 +107,12 @@ func testAccInfobloxAdminGroupCheckDestroy(state *terraform.State, adminGroupNam
 		if id, ok := rs.Primary.Attributes["id"]; ok && id == "" {
 			return nil
 		}
-		api := admingroup.NewGetAll()
-		err := client.Do(api)
+		groups, err := client.ReadAll(model.AdmingroupObj)
 		if err != nil {
 			return fmt.Errorf("Infoblox - error occurred whilst retrieving a list of Admin Groups")
 		}
-		for _, adminGroup := range *api.ResponseObject().(*[]admingroup.IBXAdminGroupReference) {
-			if adminGroup.AdminGroupName == adminGroupName {
+		for _, adminGroup := range groups {
+			if adminGroup["name"] == adminGroupName {
 				return fmt.Errorf("Infoblox Admin Group %s still exists", adminGroupName)
 			}
 		}
@@ -133,14 +131,13 @@ func testAccInfobloxAdminGroupCheckExists(adminGroupName, adminGroupResource str
 			return fmt.Errorf("\nInfoblox Admin Group ID not set for %s in resources", adminGroupName)
 		}
 
-		client := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
-		api := admingroup.NewGetAll()
-		err := client.Do(api)
+		client := GetClient()
+		groups, err := client.ReadAll(model.AdmingroupObj)
 		if err != nil {
 			return fmt.Errorf("Infoblox Admin Group - error whilst retrieving a list of Admin Groups: %+v", err)
 		}
-		for _, adminGroup := range *api.ResponseObject().(*[]admingroup.IBXAdminGroupReference) {
-			if adminGroup.AdminGroupName == adminGroupName {
+		for _, adminGroup := range groups {
+			if adminGroup["name"] == adminGroupName {
 				return nil
 			}
 		}

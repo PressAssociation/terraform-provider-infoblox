@@ -5,8 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"github.com/sky-uk/skyinfoblox"
-	"github.com/sky-uk/skyinfoblox/api/records"
+	"github.com/sky-uk/skyinfoblox/api/common/v261/model"
 	"regexp"
 	"testing"
 )
@@ -23,9 +22,11 @@ func TestAccInfobloxCNAMEBasic(t *testing.T) {
 	fmt.Printf("\n\nCNAME is %s\n\n", cname)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccInfobloxCNAMECheckDestroy,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		CheckDestroy: func(state *terraform.State) error {
+			return testAccInfobloxCNAMECheckDestroy(state, cname)
+		},
 		Steps: []resource.TestStep{
 			{
 				Config:      testAccInfobloxCNAMENoNameCreateTemplate(canonical),
@@ -38,10 +39,6 @@ func TestAccInfobloxCNAMEBasic(t *testing.T) {
 			{
 				Config:      testAccInfobloxCNAMEEmptyTemplate(),
 				ExpectError: regexp.MustCompile(`required field is not set`),
-			},
-			{
-				Config:      testAccInfobloxCNAMETooLongCommentCreateTemplate(cname, canonical),
-				ExpectError: regexp.MustCompile(`Infoblox Create Error: Invalid HTTP response code 400 returned. Response object was`),
 			},
 			{
 				Config: testAccInfobloxCNAMECreateTemplate(cname, canonical),
@@ -67,7 +64,7 @@ func TestAccInfobloxCNAMEBasic(t *testing.T) {
 			},
 			{
 				Config:      testAccInfobloxCNAMEBadViewUpdateTemplate(cname, canonical),
-				ExpectError: regexp.MustCompile("Infoblox Update Error: Invalid HTTP response code 404 returned. Response was"),
+				ExpectError: regexp.MustCompile("Response status code: 404"),
 			},
 		},
 	})
@@ -75,8 +72,6 @@ func TestAccInfobloxCNAMEBasic(t *testing.T) {
 
 func testAccInfobloxCNAMEExists(cnameCheck, cnameResourceName string) resource.TestCheckFunc {
 	return func(state *terraform.State) error {
-
-		returnFields := []string{"name", "comment", "view", "ttl", "canonical"}
 
 		rs, ok := state.RootModule().Resources[cnameResourceName]
 		if !ok {
@@ -86,16 +81,14 @@ func testAccInfobloxCNAMEExists(cnameCheck, cnameResourceName string) resource.T
 			return fmt.Errorf("Infoblox CNAME resource ID not set in resources")
 		}
 
-		client := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
-		getAllAPI := records.NewGetAllCNAMERecords(returnFields)
-
-		err := client.Do(getAllAPI)
+		client := GetClient()
+		recs, err := client.ReadAll(model.RecordCnameObj)
 		if err != nil {
 			return fmt.Errorf("Error: %+v", err)
 		}
-		for _, cname := range getAllAPI.GetResponse() {
+		for _, cname := range recs {
 
-			if cname.Name == cnameCheck {
+			if cname["name"] == cnameCheck {
 				return nil
 			}
 		}
@@ -103,30 +96,16 @@ func testAccInfobloxCNAMEExists(cnameCheck, cnameResourceName string) resource.T
 	}
 }
 
-func testAccInfobloxCNAMECheckDestroy(state *terraform.State) error {
+func testAccInfobloxCNAMECheckDestroy(state *terraform.State, recordName string) error {
 
-	infobloxClient := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
-	returnFields := []string{"name", "comment", "view", "ttl", "canonical"}
-
-	for _, rs := range state.RootModule().Resources {
-
-		if rs.Type != "infoblox_cname_record" {
-			continue
-		}
-		if id, ok := rs.Primary.Attributes["id"]; ok && id != "" {
-			return nil
-		}
-
-		api := records.NewGetAllCNAMERecords(returnFields)
-		err := infobloxClient.Do(api)
-		if err != nil {
-			return nil
-		}
-		for _, cname := range api.GetResponse() {
-			matched, _ := regexp.MatchString("acctest-infoblox-cname-.*.slupaas.bskyb.com", cname.Name)
-			if matched {
-				return fmt.Errorf("Sky Infoblox CNAME %s still exists", cname.Name)
-			}
+	client := GetClient()
+	recs, err := client.ReadAll(model.RecordCnameObj)
+	if err != nil {
+		return err
+	}
+	for _, rec := range recs {
+		if rec["name"] == recordName {
+			return fmt.Errorf("Record %s still exists!!", recordName)
 		}
 	}
 	return nil
@@ -168,18 +147,6 @@ resource "infoblox_cname_record" "acctest" {
 `, cname, canonical)
 }
 
-func testAccInfobloxCNAMETooLongCommentCreateTemplate(cname, canonical string) string {
-	return fmt.Sprintf(`
-resource "infoblox_cname_record" "acctest" {
-  name = "%s"
-  comment = "This is a very long string.... This is a very long string.... This is a very long string.... This is a very long string.... This is a very long string.... This is a very long string.... This is a very long string.... This is a very long string.... This is a very long string.... This is a very long string...."
-  canonical = "%s"
-  view = "default"
-  ttl = 600
-}
-`, cname, canonical)
-}
-
 func testAccInfobloxCNAMEEmptyTemplate() string {
 	return fmt.Sprintf(`
 resource "infoblox_cname_record" "acctest" {
@@ -205,7 +172,7 @@ resource "infoblox_cname_record" "acctest" {
   comment = "Terraform Acceptance Testing for CNAMEs update test"
   canonical = "%s"
   view = "default"
-  ttl = -1
+  ttl = 5000
 }
 `, canonical)
 }

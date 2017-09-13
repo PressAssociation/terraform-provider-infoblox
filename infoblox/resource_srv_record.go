@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/sky-uk/skyinfoblox"
 	"github.com/sky-uk/skyinfoblox/api/records"
+	"github.com/sky-uk/terraform-provider-infoblox/infoblox/util"
 	"log"
 )
 
@@ -51,7 +52,7 @@ func resourceSRVRecord() *schema.Resource {
 			"ttl": {
 				Type:         schema.TypeInt,
 				Optional:     true,
-				ValidateFunc: validateUnsignedInteger,
+				ValidateFunc: util.ValidateUnsignedInteger,
 				Description:  "The Time To Live assigned to CNAME",
 			},
 			"use_ttl": {
