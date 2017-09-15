@@ -56,7 +56,6 @@ func externalServerSchema() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "A generated TSIG key. Values with leading or trailing whitespace are not valid for this field.",
 				Optional:    true,
-				Default:     "",
 			},
 			"tsig_key_alg": {
 				Type:        schema.TypeString,

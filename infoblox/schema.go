@@ -27,6 +27,8 @@ func GetAttrs(resource *schema.Resource) []ResourceAttr {
 		attr.Type = s[key].Type
 		attrs = append(attrs, attr)
 	}
+	str = spew.Sdump(attrs)
+	log.Println("Attributes:\n", str)
 	return attrs
 }
 

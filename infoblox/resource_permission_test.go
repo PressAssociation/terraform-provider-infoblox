@@ -5,8 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"github.com/sky-uk/skyinfoblox"
-	"github.com/sky-uk/skyinfoblox/api/permission"
+	"github.com/sky-uk/skyinfoblox/api/common/v261/model"
 	"testing"
 )
 
@@ -16,13 +15,13 @@ func TestAccInfobloxPermissionBasic(t *testing.T) {
 	adminRoleName := fmt.Sprintf("acctest-infoblox-permission-role-%d", randomInt)
 	permissionResource := "infoblox_permission.permission_acctest"
 
-	testPermission := permission.Permission{
+	testPermission := model.Permission{
 		Role:         adminRoleName,
 		Permission:   "READ",
 		ResourceType: "AAAA",
 	}
 
-	updatedTestPermission := permission.Permission{
+	updatedTestPermission := model.Permission{
 		Role:         adminRoleName,
 		Permission:   "WRITE",
 		ResourceType: "AAAA",
@@ -57,18 +56,17 @@ func TestAccInfobloxPermissionBasic(t *testing.T) {
 	})
 }
 
-func testAccInfobloxPermissionCheckExists(testPermision permission.Permission) resource.TestCheckFunc {
+func testAccInfobloxPermissionCheckExists(testPermision model.Permission) resource.TestCheckFunc {
 	return func(state *terraform.State) error {
-		client := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
-		api := permission.NewGetAll()
-		err := client.Do(api)
+		client := GetClient()
+		recs, err := client.ReadAll(model.PermissionObj)
 		if err != nil {
-			return fmt.Errorf("Infoblox Permission - error whilst retrieving a list of Permissions: %+v", err)
+			return fmt.Errorf("Error retrieving the list of permission objects: ", err)
 		}
-		for _, permission := range *api.ResponseObject().(*[]permission.Permission) {
-			if permission.Role == testPermision.Role {
-				if permission.Permission == testPermision.Permission {
-					if permission.ResourceType == testPermision.ResourceType {
+		for _, permission := range recs {
+			if permission["role"] == testPermision.Role {
+				if permission["permission"] == testPermision.Permission {
+					if permission["resource_type"] == testPermision.ResourceType {
 						return nil
 					}
 				}
@@ -78,31 +76,22 @@ func testAccInfobloxPermissionCheckExists(testPermision permission.Permission) r
 	}
 }
 
-func testAccInfobloxPermissionCheckDestroy(state *terraform.State, testPermision permission.Permission) error {
-	client := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
-
-	for _, rs := range state.RootModule().Resources {
-		if rs.Type != "infoblox_permission" {
-			continue
-		}
-		if id, ok := rs.Primary.Attributes["id"]; ok && id == "" {
-			return nil
-		}
-		api := permission.NewGetAll()
-		err := client.Do(api)
-		if err != nil {
-			return fmt.Errorf("Infoblox - error occurred whilst retrieving a list of Admin Roles")
-		}
-		for _, permission := range *api.ResponseObject().(*[]permission.Permission) {
-			if permission.Role == testPermision.Role {
-				if permission.Permission == testPermision.Permission {
-					if permission.ResourceType == testPermision.ResourceType {
-						return fmt.Errorf("Infoblox Permission still exists")
-					}
+func testAccInfobloxPermissionCheckDestroy(state *terraform.State, testPermision model.Permission) error {
+	client := GetClient()
+	recs, err := client.ReadAll(model.PermissionObj)
+	if err != nil {
+		return fmt.Errorf("Infoblox - error occurred whilst retrieving a list of permissions")
+	}
+	for _, permission := range recs {
+		if permission["role"] == testPermision.Role {
+			if permission["permission"] == testPermision.Permission {
+				if permission["resource_type"] == testPermision.ResourceType {
+					return fmt.Errorf("Infoblox Permission still exists")
 				}
 			}
 		}
 	}
+
 	return nil
 }
 

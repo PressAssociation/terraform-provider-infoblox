@@ -76,7 +76,7 @@ func resourceZoneStub() *schema.Resource {
 				ValidateFunc: util.CheckLeadingTrailingSpaces,
 			},
 			"stub_from":    util.ExternalServerListSchema(true, false),
-			"stub_members": util.MemberServerListSchema(),
+			"stub_members": util.MemberServerListSchema(true, false),
 			"zoneformat": {
 				Type:         schema.TypeString,
 				Description:  "Determines the format of this zone - API default FORWARD",

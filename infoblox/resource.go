@@ -95,7 +95,7 @@ func UpdateResource(resource *schema.Resource, d *schema.ResourceData, m interfa
 		}
 	}
 
-	log.Printf("UPDATE: going to update reference %s with obj: \n%+v\n", obj)
+	log.Printf("UPDATE: going to update reference %s with obj: \n%+v\n", ref, obj)
 
 	if needsUpdate {
 		ref, err := client.Update(ref, obj)

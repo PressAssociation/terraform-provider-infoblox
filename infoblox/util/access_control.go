@@ -3,7 +3,6 @@ package util
 import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/sky-uk/skyinfoblox/api/zoneauth"
 )
 
 // AccessControlSchema - returns the schema for an access control
@@ -14,7 +13,7 @@ func AccessControlSchema() *schema.Schema {
 		Optional:    true,
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
-				"type": {
+				"_struct": {
 					Type:         schema.TypeString,
 					Description:  "Specifies the type of struct we're passing",
 					Optional:     true,
@@ -79,6 +78,7 @@ func ValidateAddressAcPermission(v interface{}, k string) (ws []string, errors [
 }
 
 // BuildAcList - builds a list of access controls
+/*
 func BuildAcList(acList []interface{}) []interface{} {
 
 	builtAc := make([]interface{}, len(acList))
@@ -107,3 +107,4 @@ func BuildAcList(acList []interface{}) []interface{} {
 	}
 	return builtAc
 }
+*/

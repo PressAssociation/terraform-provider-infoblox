@@ -2,6 +2,7 @@ package infoblox
 
 import (
 	"fmt"
+	"log"
 )
 
 // TestAccCheckDestroy - checks that no object of a given type and with a given
@@ -30,6 +31,7 @@ func TestAccCheckExists(objType, key, value string) error {
 	}
 	for _, rec := range recs {
 		if rec[key] == value {
+			log.Printf("Resource with %s equal to %s exists\n", key, value)
 			return nil
 		}
 	}
