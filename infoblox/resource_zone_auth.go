@@ -106,8 +106,9 @@ func resourceZoneAuth() *schema.Resource {
 			},
 			"soa_serial_number": {
 				Type:        schema.TypeInt,
-				Description: "The SOA serial number to be used in conjunction with set_soa_serial_number (read-only)",
+				Description: "The serial number in the SOA record incrementally changes every time the record is modified. The SOA serial number to be used in conjunction with set_soa_serial_number (read-only)",
 				Optional:    true,
+				Computed:    true,
 			},
 			"soa_default_ttl": {
 				Type:         schema.TypeInt,
