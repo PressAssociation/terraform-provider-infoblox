@@ -53,6 +53,7 @@ func ReadResource(resource *schema.Resource, d *schema.ResourceData, m interface
 
 	delete(obj, "_ref") // TODO  should we move this to the binding side ?
 	for key := range obj {
+		log.Printf("Setting key %s to %+v\n", key, obj[key])
 		d.Set(key, obj[key])
 	}
 
@@ -105,5 +106,5 @@ func UpdateResource(resource *schema.Resource, d *schema.ResourceData, m interfa
 		d.SetId(ref)
 	}
 
-	return nil
+	return ReadResource(resource, d, m)
 }

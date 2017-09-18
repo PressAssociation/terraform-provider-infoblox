@@ -5,9 +5,7 @@ import (
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"github.com/sky-uk/skyinfoblox"
-	"github.com/sky-uk/skyinfoblox/api/zoneforward"
-	"net/http"
+	"github.com/sky-uk/skyinfoblox/api/common/v261/model"
 	"os"
 	"regexp"
 	"strconv"
@@ -25,7 +23,7 @@ func TestAccInfobloxZoneForwardBasic(t *testing.T) {
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		CheckDestroy: func(state *terraform.State) error {
-			return zoneForwardCheckDestroy(state, testFQDN)
+			return TestAccCheckDestroy(model.ZONEForwardObj, "fqdn", testFQDN)
 		},
 		Steps: []resource.TestStep{
 
@@ -57,7 +55,7 @@ func TestAccInfobloxZoneForwardBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.address", "10.90.233.150"),
 					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.name", "slupaas.bskyb.com"),
 					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.stealth", "false"),
-					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.tsig_key_alg", "HMAC-SHA256"),
+					//resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.tsig_key_alg", "HMAC-SHA256"),
 				),
 			},
 			{
@@ -73,41 +71,11 @@ func TestAccInfobloxZoneForwardBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.address", "10.74.233.150"),
 					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.name", "hemnonprdigmc01.bskyb.com"),
 					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.stealth", "false"),
-					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.tsig_key_alg", "HMAC-MD5"),
+					//resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.tsig_key_alg", "HMAC-MD5"),
 				),
 			},
 		},
 	})
-}
-
-func zoneForwardCheckDestroy(state *terraform.State, fqdn string) error {
-
-	infobloxClient := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
-
-	for _, rs := range state.RootModule().Resources {
-		if rs.Type != "infoblox_zone_forward" {
-			continue
-		}
-		if id, ok := rs.Primary.Attributes["id"]; ok && id == "" {
-			return nil
-		}
-		api := zoneforward.NewGetAll()
-		err := infobloxClient.Do(api)
-		if err != nil {
-			return nil
-		}
-		if api.StatusCode() != http.StatusOK {
-			return fmt.Errorf("Error getting all zones")
-		}
-		zones := *api.ResponseObject().(*[]zoneforward.ZoneForward)
-		for _, zone := range zones {
-			if zone.Fqdn == fqdn {
-				return fmt.Errorf("Infoblox Zone %s still exists", fqdn)
-			}
-		}
-	}
-
-	return nil
 }
 
 func testZoneForwardTemplateEmpty() string {
@@ -137,26 +105,7 @@ func testZoneForwardInvalidZoneFormat(testFQDN string) string {
 
 func testZoneForwardExists(testFQDN, resourceName string) resource.TestCheckFunc {
 	return func(state *terraform.State) error {
-
-		rs, ok := state.RootModule().Resources[resourceName]
-		if !ok {
-			return fmt.Errorf("Infoblox Zone Auth resource %s not found in resources", resourceName)
-		}
-		if rs.Primary.ID == "" {
-			return fmt.Errorf("Infoblox Zone Auth resource ID not set in resources ")
-		}
-		client := testAccProvider.Meta().(*skyinfoblox.InfobloxClient)
-		api := zoneforward.NewGetAll()
-		err := client.Do(api)
-		if err != nil {
-			return fmt.Errorf("Error: %+v", err)
-		}
-		for _, zone := range *api.ResponseObject().(*[]zoneforward.ZoneForward) {
-			if testFQDN == zone.Fqdn {
-				return nil
-			}
-		}
-		return fmt.Errorf("Infoblox Zone %s wasn't found", testFQDN)
+		return TestAccCheckExists(model.ZONEForwardObj, "fqdn", testFQDN)
 	}
 }
 
@@ -194,7 +143,7 @@ func testZoneForwardUpdateTemplate(testFQDN string) string {
           address = "10.74.233.150"
           name = "hemnonprdigmc01.bskyb.com"
           stealth = false
-          tsig_key_alg = "HMAC-MD5"
+          //tsig_key_alg = "HMAC-MD5"
       }]
       forwarders_only = false
   }`, testFQDN)

@@ -153,16 +153,19 @@ func resourceZoneAuth() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "Use flag for: copy_xfer_to_notify.",
 				Optional:    true,
+				Computed:    true,
 			},
 			"use_check_names_policy": {
 				Type:        schema.TypeBool,
 				Description: "Apply policy to dynamic updates and inbound zone transfers (This value applies only if the host name restriction policy is set to “Strict Hostname Checking”.)",
 				Optional:    true,
+				Computed:    true,
 			},
 			"use_external_primary": {
 				Type:        schema.TypeBool,
 				Description: "This flag controls whether the zone is using an external primary.",
 				Optional:    true,
+				Computed:    true,
 			},
 			"allow_update":   util.AccessControlSchema(),
 			"allow_transfer": util.AccessControlSchema(),
@@ -170,6 +173,7 @@ func resourceZoneAuth() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "allow_transfer",
 				Optional:    true,
+				Computed:    true,
 			},
 		},
 	}
