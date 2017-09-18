@@ -104,6 +104,11 @@ func resourceZoneAuth() *schema.Resource {
 				Description: "The name server group that serves DNS for this zone.",
 				Optional:    true,
 			},
+			"scavenging_settings": {
+				Type:        schema.TypeMap,
+				Description: "The DNS scavenging settings object provides information about scavenging configuration e.g. conditions under which records can be scavenged, periodicity of scavenging operations.",
+				Optional:    true,
+			},
 			"soa_serial_number": {
 				Type:        schema.TypeInt,
 				Description: "The serial number in the SOA record incrementally changes every time the record is modified. The SOA serial number to be used in conjunction with set_soa_serial_number (read-only)",
