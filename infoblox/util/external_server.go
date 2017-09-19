@@ -61,7 +61,7 @@ func externalServerSchema() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The TSIG key algorithm. Valid values: HMAC-MD5 or HMAC-SHA256. The default value is HMAC-MD5.",
 				Optional:    true,
-				Computed:    true,
+				Default:     "HMAC-MD5",
 			},
 			"tsig_key_name": {
 				Type:        schema.TypeString,

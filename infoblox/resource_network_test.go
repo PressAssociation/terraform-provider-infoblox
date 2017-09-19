@@ -23,14 +23,14 @@ func TestAccResourceNetwork(t *testing.T) {
 			{
 				Config: testAccResourceNetworkCreateTemplate(networkAddr),
 				Check: resource.ComposeTestCheckFunc(
-					testAccResourceNetworkExists(networkAddr, resourceName),
+					testAccResourceNetworkExists("network", networkAddr),
 					resource.TestCheckResourceAttr(resourceName, "network", networkAddr),
 					resource.TestCheckResourceAttr(resourceName, "comment", "a comment on a network"),
 				),
 			}, {
 				Config: testAccResourceNetworkUpdateTemplate(networkAddr),
 				Check: resource.ComposeTestCheckFunc(
-					testAccResourceNetworkExists(networkAddr, resourceName),
+					testAccResourceNetworkExists("network", networkAddr),
 					resource.TestCheckResourceAttr(resourceName, "network", networkAddr),
 					resource.TestCheckResourceAttr(resourceName, "comment", "another comment on a network"),
 					resource.TestCheckResourceAttr(resourceName, "disable", "true"),
@@ -41,9 +41,9 @@ func TestAccResourceNetwork(t *testing.T) {
 
 }
 
-func testAccResourceNetworkExists(networkAddr, resourceName string) resource.TestCheckFunc {
+func testAccResourceNetworkExists(key, value string) resource.TestCheckFunc {
 	return func(state *terraform.State) error {
-		return TestAccCheckExists(model.NetworkObj, "network", networkAddr)
+		return TestAccCheckExists(model.NetworkObj, key, value)
 	}
 }
 

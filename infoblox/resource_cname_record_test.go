@@ -25,7 +25,7 @@ func TestAccInfobloxCNAMEBasic(t *testing.T) {
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		CheckDestroy: func(state *terraform.State) error {
-			return testAccInfobloxCNAMECheckDestroy(state, cname)
+			return TestAccCheckDestroy(model.RecordCnameObj, "name", cname)
 		},
 		Steps: []resource.TestStep{
 			{
@@ -43,7 +43,7 @@ func TestAccInfobloxCNAMEBasic(t *testing.T) {
 			{
 				Config: testAccInfobloxCNAMECreateTemplate(cname, canonical),
 				Check: resource.ComposeTestCheckFunc(
-					testAccInfobloxCNAMEExists(cname, cnameResourceName),
+					testAccInfobloxCNAMEExists("name", cname),
 					resource.TestCheckResourceAttr(cnameResourceName, "name", cname),
 					resource.TestCheckResourceAttr(cnameResourceName, "comment", "Terraform Acceptance Testing for CNAMEs"),
 					resource.TestCheckResourceAttr(cnameResourceName, "canonical", canonical),
@@ -54,7 +54,7 @@ func TestAccInfobloxCNAMEBasic(t *testing.T) {
 			{
 				Config: testAccInfobloxCNAMEUpdateTemplate(cnameUpdate, canonicalUpdate),
 				Check: resource.ComposeTestCheckFunc(
-					testAccInfobloxCNAMEExists(cnameUpdate, cnameResourceName),
+					testAccInfobloxCNAMEExists("name", cnameUpdate),
 					resource.TestCheckResourceAttr(cnameResourceName, "name", cnameUpdate),
 					resource.TestCheckResourceAttr(cnameResourceName, "comment", "Terraform Acceptance Testing for CNAMEs update test"),
 					resource.TestCheckResourceAttr(cnameResourceName, "canonical", canonicalUpdate),
@@ -70,45 +70,10 @@ func TestAccInfobloxCNAMEBasic(t *testing.T) {
 	})
 }
 
-func testAccInfobloxCNAMEExists(cnameCheck, cnameResourceName string) resource.TestCheckFunc {
+func testAccInfobloxCNAMEExists(key, value string) resource.TestCheckFunc {
 	return func(state *terraform.State) error {
-
-		rs, ok := state.RootModule().Resources[cnameResourceName]
-		if !ok {
-			return fmt.Errorf("Infoblox CNAME resource %s not found in resources", cnameResourceName)
-		}
-		if rs.Primary.ID == "" {
-			return fmt.Errorf("Infoblox CNAME resource ID not set in resources")
-		}
-
-		client := GetClient()
-		recs, err := client.ReadAll(model.RecordCnameObj)
-		if err != nil {
-			return fmt.Errorf("Error: %+v", err)
-		}
-		for _, cname := range recs {
-
-			if cname["name"] == cnameCheck {
-				return nil
-			}
-		}
-		return fmt.Errorf("Infoblox CNAME %s wasn't found", cnameCheck)
+		return TestAccCheckExists(model.RecordCnameObj, key, value)
 	}
-}
-
-func testAccInfobloxCNAMECheckDestroy(state *terraform.State, recordName string) error {
-
-	client := GetClient()
-	recs, err := client.ReadAll(model.RecordCnameObj)
-	if err != nil {
-		return err
-	}
-	for _, rec := range recs {
-		if rec["name"] == recordName {
-			return fmt.Errorf("Record %s still exists!!", recordName)
-		}
-	}
-	return nil
 }
 
 func testAccInfobloxCNAMECreateTemplate(cname, canonical string) string {

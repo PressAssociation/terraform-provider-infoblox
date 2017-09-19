@@ -15,29 +15,17 @@ func TestAccInfobloxPermissionBasic(t *testing.T) {
 	adminRoleName := fmt.Sprintf("acctest-infoblox-permission-role-%d", randomInt)
 	permissionResource := "infoblox_permission.permission_acctest"
 
-	testPermission := model.Permission{
-		Role:         adminRoleName,
-		Permission:   "READ",
-		ResourceType: "AAAA",
-	}
-
-	updatedTestPermission := model.Permission{
-		Role:         adminRoleName,
-		Permission:   "WRITE",
-		ResourceType: "AAAA",
-	}
-
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		CheckDestroy: func(state *terraform.State) error {
-			return testAccInfobloxPermissionCheckDestroy(state, testPermission)
+			return TestAccCheckDestroy(model.PermissionObj, "role", adminRoleName)
 		},
 		Steps: []resource.TestStep{
 			{
 				Config: testAccInfobloxPermissionCreateTemplate(adminRoleName),
 				Check: resource.ComposeTestCheckFunc(
-					testAccInfobloxPermissionCheckExists(testPermission),
+					testAccInfobloxPermissionCheckExists("role", adminRoleName),
 					resource.TestCheckResourceAttr(permissionResource, "role", adminRoleName),
 					resource.TestCheckResourceAttr(permissionResource, "permission", "READ"),
 					resource.TestCheckResourceAttr(permissionResource, "resource_type", "AAAA"),
@@ -46,7 +34,7 @@ func TestAccInfobloxPermissionBasic(t *testing.T) {
 			{
 				Config: testAccInfobloxPermissionUpdateTemplate(adminRoleName),
 				Check: resource.ComposeTestCheckFunc(
-					testAccInfobloxPermissionCheckExists(updatedTestPermission),
+					testAccInfobloxPermissionCheckExists("role", adminRoleName),
 					resource.TestCheckResourceAttr(permissionResource, "role", adminRoleName),
 					resource.TestCheckResourceAttr(permissionResource, "permission", "WRITE"),
 					resource.TestCheckResourceAttr(permissionResource, "resource_type", "AAAA"),
@@ -56,43 +44,10 @@ func TestAccInfobloxPermissionBasic(t *testing.T) {
 	})
 }
 
-func testAccInfobloxPermissionCheckExists(testPermision model.Permission) resource.TestCheckFunc {
+func testAccInfobloxPermissionCheckExists(key, value string) resource.TestCheckFunc {
 	return func(state *terraform.State) error {
-		client := GetClient()
-		recs, err := client.ReadAll(model.PermissionObj)
-		if err != nil {
-			return fmt.Errorf("Error retrieving the list of permission objects: ", err)
-		}
-		for _, permission := range recs {
-			if permission["role"] == testPermision.Role {
-				if permission["permission"] == testPermision.Permission {
-					if permission["resource_type"] == testPermision.ResourceType {
-						return nil
-					}
-				}
-			}
-		}
-		return fmt.Errorf("Permission wasn't found on remote Infoblox server")
+		return TestAccCheckExists(model.PermissionObj, key, value)
 	}
-}
-
-func testAccInfobloxPermissionCheckDestroy(state *terraform.State, testPermision model.Permission) error {
-	client := GetClient()
-	recs, err := client.ReadAll(model.PermissionObj)
-	if err != nil {
-		return fmt.Errorf("Infoblox - error occurred whilst retrieving a list of permissions")
-	}
-	for _, permission := range recs {
-		if permission["role"] == testPermision.Role {
-			if permission["permission"] == testPermision.Permission {
-				if permission["resource_type"] == testPermision.ResourceType {
-					return fmt.Errorf("Infoblox Permission still exists")
-				}
-			}
-		}
-	}
-
-	return nil
 }
 
 func testAccInfobloxPermissionCreateTemplate(roleName string) string {

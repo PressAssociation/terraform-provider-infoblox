@@ -82,22 +82,17 @@ func TestAccInfobloxZoneAuthBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(testFQDNResourceName, "locked", "true"),
 					resource.TestCheckResourceAttr(testFQDNResourceName, "copy_xfer_to_notify", "false"),
 					resource.TestCheckResourceAttr(testFQDNResourceName, "use_copy_xfer_to_notify", "false"),
-					/*
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0._struct", "addressac"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.address", "192.168.100.10"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.permission", "ALLOW"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1._struct", "addressac"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1.address", "192.168.101.10"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1.permission", "ALLOW"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2._struct", "tsigac"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.tsig_key", "0jnu3SdsMvzzlmTDPYRceA=="),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.tsig_key_alg", "HMAC-SHA256"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.tsig_key_name", "acc-test.key"),
-					*/
-					// NOTE : the use_tsig_key_name is not handled properly by Infoblox
-					// it is not part of the response when you create an allow_update struct
-					// hence is treated as false.
-					//resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.use_tsig_key_name", "false"), // << NOTE: it should be true
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0._struct", "addressac"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.address", "192.168.100.10"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.permission", "ALLOW"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1._struct", "addressac"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1.address", "192.168.101.10"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1.permission", "ALLOW"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2._struct", "tsigac"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.tsig_key", "0jnu3SdsMvzzlmTDPYRceA=="),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.tsig_key_alg", "HMAC-SHA256"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.tsig_key_name", "acc-test.key"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.use_tsig_key_name", "true"),
 				),
 			},
 			{
@@ -121,19 +116,17 @@ func TestAccInfobloxZoneAuthBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(testFQDNResourceName, "copy_xfer_to_notify", "true"),
 					resource.TestCheckResourceAttr(testFQDNResourceName, "use_copy_xfer_to_notify", "true"),
 					resource.TestCheckResourceAttr(testFQDNResourceName, "use_external_primary", "false"),
-					/*
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0._struct", "tsigac"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.tsig_key", "0jnu3SdsMvzzlmToPYRceA=="),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.tsig_key_alg", "HMAC-MD5"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.tsig_key_name", "test.key"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.use_tsig_key_name", "false"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1._struct", "addressac"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1.address", "192.168.120.10"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1.permission", "DENY"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2._struct", "addressac"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.address", "192.168.120.11"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.permission", "ALLOW"),
-					*/
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0._struct", "tsigac"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.tsig_key", "0jnu3SdsMvzzlmTDPYRceA=="),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.tsig_key_alg", "HMAC-MD5"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.tsig_key_name", "acc-test.key"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.use_tsig_key_name", "false"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1._struct", "addressac"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1.address", "192.168.120.10"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1.permission", "DENY"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2._struct", "addressac"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.address", "192.168.120.11"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.permission", "ALLOW"),
 				),
 			},
 			{
@@ -154,19 +147,17 @@ func TestAccInfobloxZoneAuthBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(testFQDNResourceName, "dns_integrity_enable", "false"),
 					resource.TestCheckResourceAttr(testFQDNResourceName, "dns_integrity_member", "nonprdibxdns01.bskyb.com"),
 					resource.TestCheckResourceAttr(testFQDNResourceName, "locked", "false"),
-					/*
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0._struct", "tsigac"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.tsig_key", "0jnu3SdsMvzzlmToPYRceA=="),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.tsig_key_alg", "HMAC-MD5"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.tsig_key_name", "test.key"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.use_tsig_key_name", "false"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1._struct", "addressac"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1.address", "192.168.120.10"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1.permission", "DENY"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2._struct", "addressac"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.address", "192.168.120.11"),
-						resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.permission", "ALLOW"),
-					*/
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0._struct", "tsigac"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.tsig_key", "0jnu3SdsMvzzlmTDPYRceA=="),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.tsig_key_alg", "HMAC-MD5"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.tsig_key_name", "acc-test.key"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.0.use_tsig_key_name", "false"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1._struct", "addressac"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1.address", "192.168.120.10"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.1.permission", "DENY"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2._struct", "addressac"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.address", "192.168.120.11"),
+					resource.TestCheckResourceAttr(testFQDNResourceName, "allow_update.2.permission", "ALLOW"),
 				),
 			},
 		},
@@ -263,10 +254,10 @@ fqdn = "%s"
 allow_update = [
 {
   _struct = "tsigac"
-  tsig_key = "0jnu3SdsMvzzlmTDPYTceA=="
+  tsig_key = "0jnu3SdsMvzzlmTDPYRceA=="
   tsig_key_alg = "SOME_INVALID_ALGORITHM"
-  tsig_key_name = "test.key"
-  //use_tsig_key_name = true
+  tsig_key_name = "acc-test.key"
+  use_tsig_key_name = true
 },
 ]}`, testFQDN)
 }
@@ -284,10 +275,10 @@ allow_update = [
 },
 {
   _struct = "tsigac"
-  tsig_key = " 0jnu3SdsMvzzlmTDPYTceA== "
+  tsig_key = " 0jnu3SdsMvzzlmTDPYRceA== "
   tsig_key_alg = "HMAC-SHA256"
   tsig_key_name = " test.key "
-  //use_tsig_key_name = true
+  use_tsig_key_name = true
 },
 ]}`, testFQDN)
 }
@@ -328,7 +319,7 @@ resource "infoblox_zone_auth" "acctest" {
             tsig_key = "0jnu3SdsMvzzlmTDPYRceA=="
             tsig_key_alg = "HMAC-SHA256"
             tsig_key_name = "acc-test.key"
-            //use_tsig_key_name = true
+            use_tsig_key_name = true
         },
     ]
 }`, testFQDN)
@@ -337,66 +328,67 @@ resource "infoblox_zone_auth" "acctest" {
 func testAccInfobloxZoneAuthUpdateTemplate(testFQDN string) string {
 	return fmt.Sprintf(`
 resource "infoblox_zone_auth" "acctest" {
-fqdn = "%s"
-comment = "Updated a zone"
-zone_format = "FORWARD"
-view = "default"
-prefix = "128-189"
-soa_default_ttl = 7200
-soa_negative_ttl = 90
-soa_refresh = 1800
-soa_retry = 150
-soa_expire = 888888
-disable = true
-dns_integrity_enable = false
-dns_integrity_member = "nonprdibxdns01.bskyb.com"
-locked = false
-copy_xfer_to_notify = true
-use_copy_xfer_to_notify = true
-use_external_primary = false
-ns_group="Sky OTT Default"
-allow_transfer = [
-      {
-        _struct = "addressac"
-        address = "192.168.234.11"
-        permission = "DENY"
-      },
-      {
-        _struct = "tsigac"
-        tsig_key = "0jnu3SdsMvzzlmTDPYTceA=="
-        tsig_key_alg = "HMAC-SHA256"
-        tsig_key_name = "abc.key"
-        //use_tsig_key_name = true
-      },
-      {
-        _struct = "addressac"
-        address = "192.168.101.11"
-        permission = "ALLOW"
-      },
-      {
-        _struct = "addressac"
-        address = "192.168.111.10"
-        permission = "ALLOW"
-      },
-    ]
-allow_update = [
-{
-  _struct = "tsigac"
-  tsig_key = "0jnu3SdsMvzzlmToPYRceA=="
-  tsig_key_alg = "HMAC-MD5"
-  tsig_key_name = "test.key"
-  use_tsig_key_name = false
-},
-{
-  _struct = "addressac"
-  address = "192.168.120.10"
-  permission = "DENY"
-},
-{
-  _struct = "addressac"
-  address = "192.168.120.11"
-  permission = "ALLOW"
-},]}`, testFQDN)
+  fqdn = "%s"
+  comment = "Updated a zone"
+  zone_format = "FORWARD"
+  view = "default"
+  prefix = "128-189"
+  soa_default_ttl = 7200
+  soa_negative_ttl = 90
+  soa_refresh = 1800
+  soa_retry = 150
+  soa_expire = 888888
+  disable = true
+  dns_integrity_enable = false
+  dns_integrity_member = "nonprdibxdns01.bskyb.com"
+  locked = false
+  copy_xfer_to_notify = true
+  use_copy_xfer_to_notify = true
+  use_external_primary = false
+  ns_group="Sky OTT Default"
+  allow_transfer = [
+        {
+          _struct = "addressac"
+          address = "192.168.234.11"
+          permission = "DENY"
+        },
+        {
+          _struct = "tsigac"
+          tsig_key = "0jnu3SdsMvzzlmTDPYRceA=="
+          tsig_key_alg = "HMAC-SHA256"
+          tsig_key_name = "acc-test.key"
+          use_tsig_key_name = true
+        },
+        {
+          _struct = "addressac"
+          address = "192.168.101.11"
+          permission = "ALLOW"
+        },
+        {
+          _struct = "addressac"
+          address = "192.168.111.10"
+          permission = "ALLOW"
+        },
+  ]
+  allow_update = [
+    {
+      _struct = "tsigac"
+      tsig_key = "0jnu3SdsMvzzlmTDPYRceA=="
+      tsig_key_alg = "HMAC-MD5"
+      tsig_key_name = "acc-test.key"
+      use_tsig_key_name = false
+    },
+    {
+      _struct = "addressac"
+      address = "192.168.120.10"
+      permission = "DENY"
+    },
+    {
+      _struct = "addressac"
+      address = "192.168.120.11"
+      permission = "ALLOW"
+    },
+  ]}`, testFQDN)
 }
 
 func testAccInfobloxZoneAuthUpdateTwoTemplate(testFQDN string) string {
@@ -420,9 +412,9 @@ ns_group="Sky OTT Default"
 allow_update = [
 {
   _struct = "tsigac"
-  tsig_key = "0jnu3SdsMvzzlmToPYRceA=="
+  tsig_key = "0jnu3SdsMvzzlmTDPYRceA=="
   tsig_key_alg = "HMAC-MD5"
-  tsig_key_name = "test.key"
+  tsig_key_name = "acc-test.key"
   use_tsig_key_name = false
 },
 {

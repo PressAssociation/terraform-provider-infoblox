@@ -29,7 +29,7 @@ func TestAccInfobloxNSRecordBasic(t *testing.T) {
 		},
 		Providers: testAccProviders,
 		CheckDestroy: func(state *terraform.State) error {
-			return TestAccCheckDestroy(model.RecordNSObj, "name", nameServerZoneName)
+			return TestAccCheckDestroy(model.RecordNSObj, "nameserver", createNameServer)
 		},
 		Steps: []resource.TestStep{
 			{

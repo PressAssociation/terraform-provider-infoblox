@@ -24,6 +24,7 @@ func resourcePermission() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "A reference to a WAPI object, which will be the object this permission applies to.",
 				Optional:    true,
+				Computed:    true,
 			},
 			"permission": {
 				Type:         schema.TypeString,

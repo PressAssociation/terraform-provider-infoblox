@@ -55,7 +55,7 @@ func TestAccInfobloxZoneForwardBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.address", "10.90.233.150"),
 					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.name", "slupaas.bskyb.com"),
 					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.stealth", "false"),
-					//resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.tsig_key_alg", "HMAC-SHA256"),
+					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.tsig_key_alg", "HMAC-SHA256"),
 				),
 			},
 			{
@@ -71,7 +71,7 @@ func TestAccInfobloxZoneForwardBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.address", "10.74.233.150"),
 					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.name", "hemnonprdigmc01.bskyb.com"),
 					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.stealth", "false"),
-					//resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.tsig_key_alg", "HMAC-MD5"),
+					resource.TestCheckResourceAttr(zoneForwardName, "forward_to.0.tsig_key_alg", "HMAC-MD5"),
 				),
 			},
 		},
@@ -143,7 +143,7 @@ func testZoneForwardUpdateTemplate(testFQDN string) string {
           address = "10.74.233.150"
           name = "hemnonprdigmc01.bskyb.com"
           stealth = false
-          //tsig_key_alg = "HMAC-MD5"
+          tsig_key_alg = "HMAC-MD5"
       }]
       forwarders_only = false
   }`, testFQDN)

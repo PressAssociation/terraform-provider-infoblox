@@ -27,7 +27,7 @@ func TestAccResourceARecord(t *testing.T) {
 			{
 				Config: testAccResourceARecordCreateTemplate(recordName),
 				Check: resource.ComposeTestCheckFunc(
-					testAccResourceARecordExists(recordName, resourceName),
+					testAccResourceARecordExists("name", recordName),
 					resource.TestCheckResourceAttr(resourceName, "name", recordName),
 					resource.TestCheckResourceAttr(resourceName, "ipv4addr", "10.0.0.10"),
 					resource.TestCheckResourceAttr(resourceName, "ttl", "9000"),
@@ -36,7 +36,7 @@ func TestAccResourceARecord(t *testing.T) {
 			{
 				Config: testAccResourceARecordUpdateTemplate(recordName),
 				Check: resource.ComposeTestCheckFunc(
-					testAccResourceARecordExists(recordName, resourceName),
+					testAccResourceARecordExists("name", recordName),
 					resource.TestCheckResourceAttr(resourceName, "name", recordName),
 					resource.TestCheckResourceAttr(resourceName, "ipv4addr", "10.0.0.10"),
 					resource.TestCheckResourceAttr(resourceName, "ttl", "900"),
@@ -46,43 +46,9 @@ func TestAccResourceARecord(t *testing.T) {
 	})
 }
 
-/*
-func testAccResourceARecordDestroy(state *terraform.State, recordName string) error {
-
-	client := GetClient()
-	recs, err := client.ReadAll(model.RecordAObj)
-	if err != nil {
-		return err
-	}
-	for _, rec := range recs {
-		if rec["name"] == recordName {
-			return fmt.Errorf("A record %s still exists!!", recordName)
-		}
-	}
-	return nil
-}
-*/
-func testAccResourceARecordExists(recordName, resourceName string) resource.TestCheckFunc {
+func testAccResourceARecordExists(key, value string) resource.TestCheckFunc {
 	return func(state *terraform.State) error {
-		rs, ok := state.RootModule().Resources[resourceName]
-		if !ok {
-			return fmt.Errorf("\nInfoblox A record resource %s not found in resources: ", resourceName)
-		}
-		if rs.Primary.ID == "" {
-			return fmt.Errorf("\nInfoblox A record resource %s ID not set", resourceName)
-		}
-		client := GetClient()
-		recs, err := client.ReadAll(model.RecordAObj)
-		if err != nil {
-			return fmt.Errorf("Error getting the A records: %+v", err)
-		}
-		for _, x := range recs {
-			if x["name"] == recordName {
-				return nil
-			}
-		}
-		return fmt.Errorf("Could not find %s", recordName)
-
+		return TestAccCheckExists(model.RecordAObj, key, value)
 	}
 }
 
