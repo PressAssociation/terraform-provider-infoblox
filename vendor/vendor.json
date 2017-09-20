@@ -492,12 +492,12 @@
 			"versionExact": "0.0.5"
 		},
 		{
-			"checksumSHA1": "ecF9DmY02OH3gTGjRZaAZT5B+P0=",
+			"checksumSHA1": "0TisV+GtgcpwGphOly9u7AvYLyk=",
 			"path": "github.com/sky-uk/skyinfoblox",
-			"revision": "d50cb9ba09635231c2d46f1c11152f91c6aa8a60",
-			"revisionTime": "2017-09-20T11:52:33Z",
-			"version": "0.2.1",
-			"versionExact": "0.2.1"
+			"revision": "e10fff09213b8aeaa7bd7019b7c10b5f5420e485",
+			"revisionTime": "2017-09-20T15:21:30Z",
+			"version": "0.2.2",
+			"versionExact": "0.2.2"
 		},
 		{
 			"checksumSHA1": "FtlIn9SLCALfqrulxl1yP+9HU4w=",
