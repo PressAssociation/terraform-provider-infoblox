@@ -2,6 +2,7 @@ package infoblox
 
 import (
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/sky-uk/skyinfoblox"
 	"log"
 	"reflect"
 )
@@ -20,7 +21,8 @@ func CreateResource(name string, resource *schema.Resource, d *schema.ResourceDa
 		}
 	}
 
-	client := GetClient()
+	params := m.(map[string]interface{})
+	client := params["ibxClient"].(*skyinfoblox.Client)
 
 	log.Printf("Going to create an %s object: %+v", name, obj)
 	ref, err := client.Create(name, obj)
@@ -46,7 +48,8 @@ func CreateAndReadResource(name string, resource *schema.Resource, d *schema.Res
 		}
 	}
 
-	client := GetClient()
+	params := m.(map[string]interface{})
+	client := params["ibxClient"].(*skyinfoblox.Client)
 
 	log.Printf("Going to create an %s object: %+v", name, obj)
 	createdObj, err := client.CreateAndRead(name, obj)
@@ -83,7 +86,8 @@ func isScalar(field interface{}) bool {
 // ReadResource - Reads a resource provided its resource schema
 func ReadResource(resource *schema.Resource, d *schema.ResourceData, m interface{}) error {
 
-	client := GetClient()
+	params := m.(map[string]interface{})
+	client := params["ibxClient"].(*skyinfoblox.Client)
 
 	ref := d.Id()
 	obj := make(map[string]interface{})
@@ -113,7 +117,8 @@ func ReadResource(resource *schema.Resource, d *schema.ResourceData, m interface
 // DeleteResource - Deletes a resource
 func DeleteResource(d *schema.ResourceData, m interface{}) error {
 
-	client := GetClient()
+	params := m.(map[string]interface{})
+	client := params["ibxClient"].(*skyinfoblox.Client)
 
 	ref := d.Id()
 	ref, err := client.Delete(ref)
@@ -130,7 +135,8 @@ func UpdateResource(resource *schema.Resource, d *schema.ResourceData, m interfa
 
 	needsUpdate := false
 
-	client := GetClient()
+	params := m.(map[string]interface{})
+	client := params["ibxClient"].(*skyinfoblox.Client)
 
 	ref := d.Id()
 	obj := make(map[string]interface{})
@@ -164,7 +170,8 @@ func UpdateAndReadResource(resource *schema.Resource, d *schema.ResourceData, m 
 
 	needsUpdate := false
 
-	client := GetClient()
+	params := m.(map[string]interface{})
+	client := params["ibxClient"].(*skyinfoblox.Client)
 
 	ref := d.Id()
 	obj := make(map[string]interface{})
