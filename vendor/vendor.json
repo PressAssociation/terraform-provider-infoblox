@@ -502,18 +502,18 @@
 		{
 			"checksumSHA1": "FtlIn9SLCALfqrulxl1yP+9HU4w=",
 			"path": "github.com/sky-uk/skyinfoblox/api/common",
-			"revision": "d50cb9ba09635231c2d46f1c11152f91c6aa8a60",
-			"revisionTime": "2017-09-20T11:52:33Z",
-			"version": "0.2.1",
-			"versionExact": "0.2.1"
+			"revision": "e10fff09213b8aeaa7bd7019b7c10b5f5420e485",
+			"revisionTime": "2017-09-20T15:21:30Z",
+			"version": "0.2.2",
+			"versionExact": "0.2.2"
 		},
 		{
 			"checksumSHA1": "n0B33u8OEXYjwngbTVZ2Ry9ZOok=",
 			"path": "github.com/sky-uk/skyinfoblox/api/common/v261/model",
-			"revision": "d50cb9ba09635231c2d46f1c11152f91c6aa8a60",
-			"revisionTime": "2017-09-20T11:52:33Z",
-			"version": "0.2.1",
-			"versionExact": "0.2.1"
+			"revision": "e10fff09213b8aeaa7bd7019b7c10b5f5420e485",
+			"revisionTime": "2017-09-20T15:21:30Z",
+			"version": "0.2.2",
+			"versionExact": "0.2.2"
 		},
 		{
 			"checksumSHA1": "J+ppEq6nYMKxhB9+c+MD1x9UwSc=",
