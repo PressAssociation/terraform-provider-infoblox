@@ -51,7 +51,7 @@ func TestAccInfobloxZoneAuthBasic(t *testing.T) {
 				ExpectError: regexp.MustCompile(`must be one of ALLOW or DENY`),
 			},
 			{
-				Config:      testAccInfobloxZoneAuthInvalidAllowUpdate_struct(testFQDN),
+				Config:      testAccInfobloxZoneAuthInvalidAllowUpdateStruct(testFQDN),
 				ExpectError: regexp.MustCompile(`must be one of addressac or tsigac`),
 			},
 			{
@@ -230,7 +230,7 @@ allow_update = [
 ]}`, testFQDN)
 }
 
-func testAccInfobloxZoneAuthInvalidAllowUpdate_struct(testFQDN string) string {
+func testAccInfobloxZoneAuthInvalidAllowUpdateStruct(testFQDN string) string {
 	return fmt.Sprintf(`
 resource "infoblox_zone_auth" "acctest" {
 ns_group="Sky OTT Default"

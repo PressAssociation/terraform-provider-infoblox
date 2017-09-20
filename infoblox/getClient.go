@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+//GetClient - get a skyinfoblox client..
 func GetClient() *skyinfoblox.Client {
 	params := skyinfoblox.Params{
 		WapiVersion: "v2.6.1", // this is anyhow the default...

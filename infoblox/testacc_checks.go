@@ -15,7 +15,7 @@ func TestAccCheckDestroy(objType, key, value string) error {
 	}
 	for _, rec := range recs {
 		if rec[key] == value {
-			return fmt.Errorf("Object with key %s = %s still exists!!", key, value)
+			return fmt.Errorf("Object with key %s = %s still exists", key, value)
 		}
 	}
 	return nil
@@ -35,5 +35,5 @@ func TestAccCheckExists(objType, key, value string) error {
 			return nil
 		}
 	}
-	return fmt.Errorf("Object with key %s = %s does not exists!!", key, value)
+	return fmt.Errorf("Object with key %s = %s does not exists", key, value)
 }

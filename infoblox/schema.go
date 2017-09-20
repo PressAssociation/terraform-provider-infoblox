@@ -6,6 +6,7 @@ import (
 	"log"
 )
 
+//ResourceAttr - attribute metadata
 type ResourceAttr struct {
 	Name  string
 	Type  schema.ValueType
@@ -21,7 +22,7 @@ func GetAttrs(resource *schema.Resource) []ResourceAttr {
 	str := spew.Sdump(s)
 	log.Println("Schema:\n", str)
 
-	for key, _ := range s {
+	for key := range s {
 		var attr ResourceAttr
 		attr.Name = key
 		attr.Type = s[key].Type
