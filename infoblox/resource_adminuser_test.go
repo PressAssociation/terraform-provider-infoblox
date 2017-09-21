@@ -66,7 +66,7 @@ func testCheckResourceStringSlice(name, key string, expected []string) resource.
 				return err
 			}
 			if i != len(expected) {
-				return fmt.Errorf("Attr %s expected lenght [ %d ] differs from actual [ %s ]\n", key, len(expected), sliceLength)
+				return fmt.Errorf("Attr %s expected lenght [ %d ] differs from actual [ %s ]", key, len(expected), sliceLength)
 			}
 
 		} else {
@@ -78,10 +78,10 @@ func testCheckResourceStringSlice(name, key string, expected []string) resource.
 			log.Println("Looking for key: ", indexKey)
 			if actual, ok := is.Attributes[indexKey]; ok {
 				if actual != expected[index] {
-					return fmt.Errorf("%s[%d] expected this:\n%s\nActual:\n%s\n", key, index, expected[index], actual)
+					return fmt.Errorf("%s[%d] expected this:\n%s\nActual:\n%s", key, index, expected[index], actual)
 				}
 			} else {
-				return fmt.Errorf("Attribute %s not found in resource %s\n", key, name)
+				return fmt.Errorf("Attribute %s not found in resource %s", key, name)
 			}
 		}
 		return nil
